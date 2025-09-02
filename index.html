@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Imagens com IA</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <main>
+        <h1>Analisador de Imagens com IA 🖼️</h1>
+        <p>Cole a sua chave da API do Google AI e a URL de uma imagem para que o Gemini a descreva para você.</p>
+        
+        <div class="input-group">
+            <label for="api-key-input">Sua Chave da API do Google AI</label>
+            <input type="password" id="api-key-input" placeholder="Cole sua chave aqui">
+        </div>
+
+        <div class="input-group">
+            <label for="image-url-input">URL da Imagem</label>
+            <input type="text" id="image-url-input" placeholder="https://exemplo.com/imagem.jpg">
+        </div>
+
+        <button id="analisar-btn">Analisar Imagem</button>
+
+        <div id="resultado">
+            <p>A descrição da imagem aparecerá aqui...</p>
+        </div>
+    </main>
+</body>
+</html>
