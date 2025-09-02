@@ -1,50 +1,42 @@
-// script.js (versão corrigida e melhorada)
+// script.js (versão final com upload de arquivo local)
 
-// 1. Seleciona os elementos do HTML com os quais vamos interagir
+// MUDANÇA 1: Seleciona o novo input de ARQUIVO em vez do de URL
 const apiKeyInput = document.querySelector("#api-key-input");
-const imageUrlInput = document.querySelector("#image-url-input");
+const imageFileInput = document.querySelector("#image-file-input"); // << MUDOU
 const analisarBtn = document.querySelector("#analisar-btn");
 const resultadoDiv = document.querySelector("#resultado");
 
-// 2. Adiciona um "ouvinte" de evento ao botão.
-// A função é 'async' pois a comunicação com a IA leva tempo.
 analisarBtn.addEventListener("click", async () => {
-    // Pega os valores dos campos e remove espaços em branco extras
     const apiKey = apiKeyInput.value.trim();
-    const imageUrl = imageUrlInput.value.trim();
 
-    // Validação: Verifica se algum dos campos está vazio
-    if (!apiKey || !imageUrl) {
-        resultadoDiv.textContent = "!!! Por favor, preencha a sua Chave de API e a URL da imagem.";
-        return; // Para a execução da função aqui
+    // MUDANÇA 2: Pega o ARQUIVO do input em vez da URL
+    const file = imageFileInput.files[0]; // << MUDOU
+
+    // Validação: Verifica se a chave ou o arquivo estão faltando
+    if (!apiKey || !file) {
+        resultadoDiv.textContent = "⚠️ Por favor, preencha a sua Chave de API e selecione um arquivo de imagem.";
+        return;
     }
 
-    // A URL da API do Google AI para o modelo de visão
     const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
     
-    // Inicia o estado de "carregando" na interface para o usuário saber que algo está acontecendo
     analisarBtn.disabled = true;
-    resultadoDiv.textContent = "Analisando a imagem... ";
+    resultadoDiv.textContent = "Analisando a imagem... 🤖";
 
-    // O bloco try...catch...finally é para tratamento de erros.
     try {
-        // Passo A: "Baixar" a imagem no navegador e pegar o tipo dela (jpeg, png, etc)
-        const responseImage = await fetch(imageUrl);
-        if (!responseImage.ok) {
-            throw new Error("Não foi possível buscar a imagem. Verifique a URL ou tente outra (pode ser um erro de CORS).");
-        }
-        const imageBlob = await responseImage.blob();
-        const imageMimeType = imageBlob.type; // MELHORIA: Detecta o tipo da imagem automaticamente
+        // MUDANÇA 3: A chamada 'fetch(imageUrl)' foi REMOVIDA! Não precisamos mais buscar a imagem na web.
 
-        // Passo B: Converter a imagem para o formato Base64, que é o que a API aceita
+        // MUDANÇA 4: O tipo da imagem (mime type) vem diretamente do arquivo que o usuário selecionou.
+        const imageMimeType = file.type; // << MUDOU
+
+        // Passo B (quase igual): Converter o ARQUIVO para o formato Base64.
         const imageDataBase64 = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(',')[1]); // Pega só o código Base64
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
             reader.onerror = reject;
-            reader.readAsDataURL(imageBlob);
+            reader.readAsDataURL(file); // << MUDOU (passamos o arquivo local para o leitor)
         });
 
-        // Monta o corpo da requisição para a API
         const requestBody = {
             "contents": [{
                 "parts": [
@@ -59,7 +51,6 @@ analisarBtn.addEventListener("click", async () => {
             }]
         };
 
-        // Passo C: Faz a chamada para a API do Gemini
         const response = await fetch(apiURL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -71,18 +62,14 @@ analisarBtn.addEventListener("click", async () => {
             throw new Error(`Erro da API: ${error.error.message}`);
         }
 
-        // Passo D: Extrai os dados da resposta e exibe na tela
         const data = await response.json();
-        // O caminho para o texto pode ser longo, é preciso navegar no objeto JSON retornado
         const descricao = data.candidates[0].content.parts[0].text;
         resultadoDiv.textContent = descricao;
 
     } catch (error) {
-        // Se algo der errado em qualquer etapa, mostra uma mensagem de erro
         console.error("Erro:", error);
-        resultadoDiv.textContent = `X Erro ao analisar a imagem: ${error.message}`;
+        resultadoDiv.textContent = `❌ Erro ao analisar a imagem: ${error.message}`;
     } finally {
-        // Independente de sucesso ou erro, reabilita o botão
         analisarBtn.disabled = false;
     }
 });
