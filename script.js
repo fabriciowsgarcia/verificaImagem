@@ -15,7 +15,7 @@ analisarBtn.addEventListener("click", async () => {
 
     // Validação: Verifica se algum dos campos está vazio
     if (!apiKey || !imageUrl) {
-        resultadoDiv.textContent = "⚠️ Por favor, preencha a sua Chave de API e a URL da imagem.";
+        resultadoDiv.textContent = "!!! Por favor, preencha a sua Chave de API e a URL da imagem.";
         return; // Para a execução da função aqui
     }
 
@@ -24,7 +24,7 @@ analisarBtn.addEventListener("click", async () => {
     
     // Inicia o estado de "carregando" na interface para o usuário saber que algo está acontecendo
     analisarBtn.disabled = true;
-    resultadoDiv.textContent = "Analisando a imagem... 🤖";
+    resultadoDiv.textContent = "Analisando a imagem... ";
 
     // O bloco try...catch...finally é para tratamento de erros.
     try {
@@ -80,7 +80,7 @@ analisarBtn.addEventListener("click", async () => {
     } catch (error) {
         // Se algo der errado em qualquer etapa, mostra uma mensagem de erro
         console.error("Erro:", error);
-        resultadoDiv.textContent = `❌ Erro ao analisar a imagem: ${error.message}`;
+        resultadoDiv.textContent = `X Erro ao analisar a imagem: ${error.message}`;
     } finally {
         // Independente de sucesso ou erro, reabilita o botão
         analisarBtn.disabled = false;
